@@ -8,6 +8,9 @@
         :root {
             --primary: #2563eb;
             --primary-hover: #1d4ed8;
+            --success: #10b981;
+            --success-hover: #059669;
+            --warning: #f59e0b;
             --bg: #f8fafc;
             --card-bg: #ffffff;
             --text: #0f172a;
@@ -39,43 +42,50 @@
             max-width: 480px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 14px;
         }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 4px;
+            padding: 4px;
         }
 
         .title {
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             font-weight: 700;
             color: var(--primary);
         }
 
         .progress {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 600;
             color: var(--sub-text);
             background-color: #e0e7ff;
-            padding: 4px 12px;
+            padding: 4px 10px;
             border-radius: 20px;
         }
 
         .card {
             background-color: var(--card-bg);
             border-radius: 16px;
-            padding: 24px 20px;
+            padding: 20px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             border: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            min-height: 320px;
+            gap: 16px;
+            min-height: 330px;
             touch-action: pan-y;
             user-select: none;
+            position: relative;
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .q-number {
@@ -86,8 +96,23 @@
             letter-spacing: 0.05em;
         }
 
+        .btn-star {
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+            color: #cbd5e1;
+            padding: 0 4px;
+            transition: color 0.2s, transform 0.1s;
+        }
+
+        .btn-star.active {
+            color: var(--warning);
+            transform: scale(1.15);
+        }
+
         .question {
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             font-weight: 600;
             line-height: 1.5;
             word-break: keep-all;
@@ -98,26 +123,26 @@
             display: none;
             background-color: #f1f5f9;
             border-left: 4px solid var(--primary);
-            padding: 16px;
+            padding: 14px;
             border-radius: 0 8px 8px 0;
             margin-top: auto;
         }
 
         .answer-box.show {
             display: block;
-            animation: fadeIn 0.25s ease-in-out;
+            animation: fadeIn 0.2s ease-in-out;
         }
 
         .answer-label {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 700;
             color: var(--sub-text);
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .answer-text {
-            font-size: 1rem;
-            line-height: 1.6;
+            font-size: 0.95rem;
+            line-height: 1.55;
             white-space: pre-line;
             color: #1e293b;
             word-break: keep-all;
@@ -126,55 +151,80 @@
         .controls {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
         }
 
         .btn-toggle {
-            width: 100%;
-            padding: 14px;
+            flex: 2;
+            padding: 12px;
             border: none;
             border-radius: 12px;
             background-color: var(--primary);
             color: white;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.2s;
             box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
         }
 
-        .btn-toggle:active {
-            background-color: var(--primary-hover);
+        .btn-exclude {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            background-color: var(--success);
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+        }
+
+        .btn-exclude:active {
+            background-color: var(--success-hover);
         }
 
         .nav-buttons {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
 
         .btn-nav {
             flex: 1;
-            padding: 12px;
+            padding: 10px;
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 10px;
             background-color: var(--card-bg);
             color: var(--text);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
         }
 
         .btn-nav:disabled {
-            opacity: 0.4;
+            opacity: 0.3;
             cursor: not-allowed;
         }
 
         .option-bar {
             display: flex;
+            flex-direction: column;
+            gap: 6px;
+            background: #ffffff;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .option-row {
+            display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 4px;
-            padding: 0 4px;
         }
 
         .checkbox-label {
@@ -184,6 +234,24 @@
             font-size: 0.85rem;
             color: var(--sub-text);
             cursor: pointer;
+        }
+
+        .btn-reset {
+            background: none;
+            border: none;
+            color: #ef4444;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .empty-msg {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--sub-text);
+            font-size: 1rem;
+            line-height: 1.6;
         }
 
         @keyframes fadeIn {
@@ -197,11 +265,15 @@
 <div class="container">
     <div class="header">
         <div class="title">🚁 드론 구술평가</div>
-        <div class="progress" id="progress">1 / 56</div>
+        <div class="progress" id="progress">남은 문제: 56개</div>
     </div>
 
     <div class="card" id="card">
-        <div class="q-number" id="qNum">QUESTION 01</div>
+        <div class="card-top">
+            <div class="q-number" id="qNum">QUESTION 01</div>
+            <button class="btn-star" id="btnStar" onclick="toggleStar()" title="복습 문제로 체크">★</button>
+        </div>
+        
         <div class="question" id="qText">문제를 불러오는 중입니다...</div>
         
         <div class="answer-box" id="ansBox">
@@ -211,7 +283,10 @@
     </div>
 
     <div class="controls">
-        <button class="btn-toggle" id="btnToggle" onclick="toggleAnswer()">정답 확인하기</button>
+        <div class="action-buttons">
+            <button class="btn-toggle" id="btnToggle" onclick="toggleAnswer()">정답 확인하기</button>
+            <button class="btn-exclude" onclick="excludeQuestion()">✅ 외웠어요</button>
+        </div>
         <div class="nav-buttons">
             <button class="btn-nav" id="btnPrev" onclick="prevQuestion()">이전</button>
             <button class="btn-nav" id="btnNext" onclick="nextQuestion()">다음</button>
@@ -219,12 +294,20 @@
     </div>
 
     <div class="option-bar">
-        <label class="checkbox-label">
-            <input type="checkbox" id="chkRandom" checked onchange="toggleRandom()"> 무작위(랜덤) 섞기
-        </label>
-        <label class="checkbox-label">
-            <input type="checkbox" id="chkAutoShow" onchange="toggleAutoShow()"> 정답 항상 표시
-        </label>
+        <div class="option-row">
+            <label class="checkbox-label">
+                <input type="checkbox" id="chkRandom" checked onchange="toggleRandom()"> 무작위(랜덤) 섞기
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" id="chkStarOnly" onchange="toggleStarOnly()"> ⭐ 체크한 문제만 보기
+            </label>
+        </div>
+        <div class="option-row" style="margin-top: 4px;">
+            <label class="checkbox-label">
+                <input type="checkbox" id="chkAutoShow" onchange="toggleAutoShow()"> 정답 항상 표시
+            </label>
+            <button class="btn-reset" onclick="resetAll()">전체 학습 초기화</button>
+        </div>
     </div>
 </div>
 
@@ -288,31 +371,72 @@ const quizData = [
     { id: 56, q: "조사간 허위진술, 업무정지 조치위반, 시정조치 지시위반, 조종자증명 받은 사람이 안전성 미인증 비행", a: "과태료 500만원" }
 ];
 
+let excludedIds = new Set();
+let starredIds = new Set();
+let currentList = [];
 let currentIndex = 0;
-let questions = [];
 let isAnswerVisible = false;
 
-function initQuiz() {
-    questions = [...quizData];
-    if (document.getElementById('chkRandom').checked) {
-        shuffleQuestions();
+function filterAndPrepareQuestions() {
+    let list = quizData.filter(item => !excludedIds.has(item.id));
+    
+    const starOnly = document.getElementById('chkStarOnly').checked;
+    if (starOnly) {
+        list = list.filter(item => starredIds.has(item.id));
     }
-    updateQuiz();
-}
 
-function shuffleQuestions() {
-    questions.sort(() => Math.random() - 0.5);
+    if (document.getElementById('chkRandom').checked) {
+        list.sort(() => Math.random() - 0.5);
+    } else {
+        list.sort((a, b) => a.id - b.id);
+    }
+
+    currentList = list;
+    if (currentIndex >= currentList.length) {
+        currentIndex = Math.max(0, currentList.length - 1);
+    }
 }
 
 function updateQuiz() {
-    const item = questions[currentIndex];
-    document.getElementById('progress').innerText = `${currentIndex + 1} / ${questions.length}`;
+    filterAndPrepareQuestions();
+    
+    const progressEl = document.getElementById('progress');
+    const cardEl = document.getElementById('card');
+
+    if (currentList.length === 0) {
+        progressEl.innerText = "남은 문제: 0개";
+        cardEl.innerHTML = `
+            <div class="empty-msg">
+                🎉 🎉 🎉<br>
+                <strong>모든 문제를 완벽하게 외우셨습니다!</strong><br><br>
+                하단의 '전체 학습 초기화'를 누르면 다시 복습할 수 있습니다.
+            </div>`;
+        document.getElementById('btnPrev').disabled = true;
+        document.getElementById('btnNext').disabled = true;
+        return;
+    }
+
+    // 카드 내용 복원 (초기화 후 재사용 대비)
+    if (!document.getElementById('qNum')) {
+        location.reload();
+        return;
+    }
+
+    const item = currentList[currentIndex];
+    progressEl.innerText = `남은 문제: ${currentList.length}개 (${currentIndex + 1}/${currentList.length})`;
     document.getElementById('qNum').innerText = `QUESTION ${String(item.id).padStart(2, '0')}`;
     document.getElementById('qText').innerText = item.q;
     document.getElementById('ansText').innerText = item.a;
 
+    const starBtn = document.getElementById('btnStar');
+    if (starredIds.has(item.id)) {
+        starBtn.classList.add('active');
+    } else {
+        starBtn.classList.remove('active');
+    }
+
     document.getElementById('btnPrev').disabled = currentIndex === 0;
-    document.getElementById('btnNext').disabled = currentIndex === questions.length - 1;
+    document.getElementById('btnNext').disabled = currentIndex === currentList.length - 1;
 
     const autoShow = document.getElementById('chkAutoShow').checked;
     if (autoShow) {
@@ -343,7 +467,7 @@ function toggleAnswer() {
 }
 
 function nextQuestion() {
-    if (currentIndex < questions.length - 1) {
+    if (currentIndex < currentList.length - 1) {
         currentIndex++;
         updateQuiz();
     }
@@ -356,13 +480,30 @@ function prevQuestion() {
     }
 }
 
-function toggleRandom() {
-    const isRandom = document.getElementById('chkRandom').checked;
-    if (isRandom) {
-        shuffleQuestions();
+function excludeQuestion() {
+    if (currentList.length === 0) return;
+    const item = currentList[currentIndex];
+    excludedIds.add(item.id);
+    updateQuiz();
+}
+
+function toggleStar() {
+    if (currentList.length === 0) return;
+    const item = currentList[currentIndex];
+    if (starredIds.has(item.id)) {
+        starredIds.delete(item.id);
     } else {
-        questions = [...quizData];
+        starredIds.add(item.id);
     }
+    updateQuiz();
+}
+
+function toggleRandom() {
+    currentIndex = 0;
+    updateQuiz();
+}
+
+function toggleStarOnly() {
     currentIndex = 0;
     updateQuiz();
 }
@@ -376,7 +517,17 @@ function toggleAutoShow() {
     }
 }
 
-// Touch Event Handling for Swipe
+function resetAll() {
+    if (confirm("외운 문제 목록과 별표 체크를 모두 초기화하시겠습니까?")) {
+        excludedIds.clear();
+        starredIds.clear();
+        document.getElementById('chkStarOnly').checked = false;
+        currentIndex = 0;
+        location.reload();
+    }
+}
+
+// 스와이프 기능
 let touchStartX = 0;
 let touchEndX = 0;
 const cardElement = document.getElementById('card');
@@ -400,7 +551,7 @@ function handleSwipe() {
     }
 }
 
-// Keyboard Navigation
+// 키보드 조작
 document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight') nextQuestion();
     if (e.key === 'ArrowLeft') prevQuestion();
@@ -410,7 +561,7 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-initQuiz();
+updateQuiz();
 </script>
 
 </body>
