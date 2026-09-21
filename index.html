@@ -371,7 +371,6 @@ const quizData = [
     { id: 56, q: "조사간 허위진술, 업무정지 조치위반, 시정조치 지시위반, 조종자증명 받은 사람이 안전성 미인증 비행", a: "과태료 500만원" }
 ];
 
-// 로컬 스토리지 연동
 let excludedIds = new Set(JSON.parse(localStorage.getItem('drone_excluded') || '[]'));
 let starredIds = new Set(JSON.parse(localStorage.getItem('drone_starred') || '[]'));
 
@@ -424,11 +423,10 @@ function renderUI() {
         return;
     }
 
-    // 인덱스 범위 안전장치
     if (currentIndex >= currentList.length) {
-        currentIndex = 0; // 끝을 초과하면 첫 문제로
+        currentIndex = 0;
     } else if (currentIndex < 0) {
-        currentIndex = currentList.length - 1; // 0 미만이면 마지막 문제로
+        currentIndex = currentList.length - 1;
     }
 
     const item = currentList[currentIndex];
@@ -445,7 +443,6 @@ function renderUI() {
         starBtn.classList.remove('active');
     }
 
-    // 무한 순환을 위해 이전/다음 버튼 항상 활성화
     document.getElementById('btnPrev').disabled = false;
     document.getElementById('btnNext').disabled = false;
 
@@ -476,14 +473,12 @@ function toggleAnswer() {
     }
 }
 
-// 다음 버튼 누를 때 마지막이면 0번째(처음)로 무한 순환
 function nextQuestion() {
     if (currentList.length === 0) return;
     currentIndex = (currentIndex + 1) % currentList.length;
     renderUI();
 }
 
-// 이전 버튼 누를 때 첫 문제면 마지막으로 순환
 function prevQuestion() {
     if (currentList.length === 0) return;
     currentIndex = (currentIndex - 1 + currentList.length) % currentList.length;
@@ -496,9 +491,8 @@ function excludeQuestion() {
     excludedIds.add(item.id);
     saveData();
     
-    prepareQuestions(false); // 순서 유지하며 제외
+    prepareQuestions(false);
     
-    // 외운 후 다음 문제로 자동 이동
     if (currentIndex >= currentList.length) {
         currentIndex = 0;
     }
@@ -534,7 +528,6 @@ function resetAll() {
     }
 }
 
-// 스와이프 지원
 let touchStartX = 0;
 let touchEndX = 0;
 const cardElement = document.getElementById('card');
@@ -558,7 +551,6 @@ function handleSwipe() {
     }
 }
 
-// 키보드 지원
 document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight') nextQuestion();
     if (e.key === 'ArrowLeft') prevQuestion();
@@ -568,7 +560,6 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// 초기화 실행
 prepareQuestions(true);
 renderUI();
 </script>
