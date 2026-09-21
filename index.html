@@ -409,6 +409,8 @@ function handleOptionChange(resetIndex = false) {
 function renderUI() {
     const progressEl = document.getElementById('progress');
     const cardEl = document.getElementById('card');
+    const btnPrev = document.getElementById('btnPrev');
+    const btnNext = document.getElementById('btnNext');
 
     if (currentList.length === 0) {
         progressEl.innerText = "남은 문제: 0개";
@@ -418,11 +420,12 @@ function renderUI() {
                 <strong>모든 문제를 완벽하게 외우셨습니다!</strong><br><br>
                 하단의 '전체 학습 초기화'를 누르면 다시 복습할 수 있습니다.
             </div>`;
-        document.getElementById('btnPrev').disabled = true;
-        document.getElementById('btnNext').disabled = true;
+        btnPrev.disabled = true;
+        btnNext.disabled = true;
         return;
     }
 
+    // 인덱스 경계값 완벽 보정 (순환)
     if (currentIndex >= currentList.length) {
         currentIndex = 0;
     } else if (currentIndex < 0) {
@@ -443,8 +446,9 @@ function renderUI() {
         starBtn.classList.remove('active');
     }
 
-    document.getElementById('btnPrev').disabled = false;
-    document.getElementById('btnNext').disabled = false;
+    // 무한 순환을 위해 항상 클릭 가능 상태 유지
+    btnPrev.disabled = false;
+    btnNext.disabled = false;
 
     if (document.getElementById('chkAutoShow').checked) {
         showAnswer();
@@ -475,13 +479,13 @@ function toggleAnswer() {
 
 function nextQuestion() {
     if (currentList.length === 0) return;
-    currentIndex = (currentIndex + 1) % currentList.length;
+    currentIndex = (currentIndex + 1) % currentList.length; // 마지막 문제 다음은 0번 문제로 순환
     renderUI();
 }
 
 function prevQuestion() {
     if (currentList.length === 0) return;
-    currentIndex = (currentIndex - 1 + currentList.length) % currentList.length;
+    currentIndex = (currentIndex - 1 + currentList.length) % currentList.length; // 0번 문제 이전은 마지막 문제로 순환
     renderUI();
 }
 
