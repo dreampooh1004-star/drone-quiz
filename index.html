@@ -424,9 +424,11 @@ function renderUI() {
         return;
     }
 
-    // 범위 체크
+    // 인덱스 범위 안전장치
     if (currentIndex >= currentList.length) {
-        currentIndex = Math.max(0, currentList.length - 1);
+        currentIndex = 0; // 끝을 초과하면 첫 문제로
+    } else if (currentIndex < 0) {
+        currentIndex = currentList.length - 1; // 0 미만이면 마지막 문제로
     }
 
     const item = currentList[currentIndex];
@@ -443,8 +445,9 @@ function renderUI() {
         starBtn.classList.remove('active');
     }
 
-    document.getElementById('btnPrev').disabled = currentIndex === 0;
-    document.getElementById('btnNext').disabled = currentIndex === currentList.length - 1;
+    // 무한 순환을 위해 이전/다음 버튼 항상 활성화
+    document.getElementById('btnPrev').disabled = false;
+    document.getElementById('btnNext').disabled = false;
 
     if (document.getElementById('chkAutoShow').checked) {
         showAnswer();
@@ -473,18 +476,18 @@ function toggleAnswer() {
     }
 }
 
+// 다음 버튼 누를 때 마지막이면 0번째(처음)로 무한 순환
 function nextQuestion() {
-    if (currentIndex < currentList.length - 1) {
-        currentIndex++;
-        renderUI();
-    }
+    if (currentList.length === 0) return;
+    currentIndex = (currentIndex + 1) % currentList.length;
+    renderUI();
 }
 
+// 이전 버튼 누를 때 첫 문제면 마지막으로 순환
 function prevQuestion() {
-    if (currentIndex > 0) {
-        currentIndex--;
-        renderUI();
-    }
+    if (currentList.length === 0) return;
+    currentIndex = (currentIndex - 1 + currentList.length) % currentList.length;
+    renderUI();
 }
 
 function excludeQuestion() {
@@ -493,7 +496,12 @@ function excludeQuestion() {
     excludedIds.add(item.id);
     saveData();
     
-    prepareQuestions(false); // 순서 유지하며 필터만 적용
+    prepareQuestions(false); // 순서 유지하며 제외
+    
+    // 외운 후 다음 문제로 자동 이동
+    if (currentIndex >= currentList.length) {
+        currentIndex = 0;
+    }
     renderUI();
 }
 
