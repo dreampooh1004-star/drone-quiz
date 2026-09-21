@@ -296,15 +296,15 @@
     <div class="option-bar">
         <div class="option-row">
             <label class="checkbox-label">
-                <input type="checkbox" id="chkRandom" checked onchange="toggleRandom()"> 무작위(랜덤) 섞기
+                <input type="checkbox" id="chkRandom" checked onchange="handleOptionChange(true)"> 무작위(랜덤) 섞기
             </label>
             <label class="checkbox-label">
-                <input type="checkbox" id="chkStarOnly" onchange="toggleStarOnly()"> ⭐ 체크한 문제만 보기
+                <input type="checkbox" id="chkStarOnly" onchange="handleOptionChange(true)"> ⭐ 체크한 문제만 보기
             </label>
         </div>
         <div class="option-row" style="margin-top: 4px;">
             <label class="checkbox-label">
-                <input type="checkbox" id="chkAutoShow" onchange="toggleAutoShow()"> 정답 항상 표시
+                <input type="checkbox" id="chkAutoShow" onchange="handleAutoShowToggle()"> 정답 항상 표시
             </label>
             <button class="btn-reset" onclick="resetAll()">전체 학습 초기화</button>
         </div>
@@ -371,13 +371,20 @@ const quizData = [
     { id: 56, q: "조사간 허위진술, 업무정지 조치위반, 시정조치 지시위반, 조종자증명 받은 사람이 안전성 미인증 비행", a: "과태료 500만원" }
 ];
 
-let excludedIds = new Set();
-let starredIds = new Set();
+// 로컬 스토리지 연동
+let excludedIds = new Set(JSON.parse(localStorage.getItem('drone_excluded') || '[]'));
+let starredIds = new Set(JSON.parse(localStorage.getItem('drone_starred') || '[]'));
+
 let currentList = [];
 let currentIndex = 0;
 let isAnswerVisible = false;
 
-function filterAndPrepareQuestions() {
+function saveData() {
+    localStorage.setItem('drone_excluded', JSON.stringify(Array.from(excludedIds)));
+    localStorage.setItem('drone_starred', JSON.stringify(Array.from(starredIds)));
+}
+
+function prepareQuestions(shouldReShuffle = false) {
     let list = quizData.filter(item => !excludedIds.has(item.id));
     
     const starOnly = document.getElementById('chkStarOnly').checked;
@@ -385,21 +392,22 @@ function filterAndPrepareQuestions() {
         list = list.filter(item => starredIds.has(item.id));
     }
 
-    if (document.getElementById('chkRandom').checked) {
+    if (shouldReShuffle && document.getElementById('chkRandom').checked) {
         list.sort(() => Math.random() - 0.5);
-    } else {
+    } else if (!document.getElementById('chkRandom').checked) {
         list.sort((a, b) => a.id - b.id);
     }
 
     currentList = list;
-    if (currentIndex >= currentList.length) {
-        currentIndex = Math.max(0, currentList.length - 1);
-    }
 }
 
-function updateQuiz() {
-    filterAndPrepareQuestions();
-    
+function handleOptionChange(resetIndex = false) {
+    if (resetIndex) currentIndex = 0;
+    prepareQuestions(true);
+    renderUI();
+}
+
+function renderUI() {
     const progressEl = document.getElementById('progress');
     const cardEl = document.getElementById('card');
 
@@ -416,14 +424,14 @@ function updateQuiz() {
         return;
     }
 
-    // 카드 내용 복원 (초기화 후 재사용 대비)
-    if (!document.getElementById('qNum')) {
-        location.reload();
-        return;
+    // 범위 체크
+    if (currentIndex >= currentList.length) {
+        currentIndex = Math.max(0, currentList.length - 1);
     }
 
     const item = currentList[currentIndex];
     progressEl.innerText = `남은 문제: ${currentList.length}개 (${currentIndex + 1}/${currentList.length})`;
+    
     document.getElementById('qNum').innerText = `QUESTION ${String(item.id).padStart(2, '0')}`;
     document.getElementById('qText').innerText = item.q;
     document.getElementById('ansText').innerText = item.a;
@@ -438,8 +446,7 @@ function updateQuiz() {
     document.getElementById('btnPrev').disabled = currentIndex === 0;
     document.getElementById('btnNext').disabled = currentIndex === currentList.length - 1;
 
-    const autoShow = document.getElementById('chkAutoShow').checked;
-    if (autoShow) {
+    if (document.getElementById('chkAutoShow').checked) {
         showAnswer();
     } else {
         hideAnswer();
@@ -469,14 +476,14 @@ function toggleAnswer() {
 function nextQuestion() {
     if (currentIndex < currentList.length - 1) {
         currentIndex++;
-        updateQuiz();
+        renderUI();
     }
 }
 
 function prevQuestion() {
     if (currentIndex > 0) {
         currentIndex--;
-        updateQuiz();
+        renderUI();
     }
 }
 
@@ -484,7 +491,10 @@ function excludeQuestion() {
     if (currentList.length === 0) return;
     const item = currentList[currentIndex];
     excludedIds.add(item.id);
-    updateQuiz();
+    saveData();
+    
+    prepareQuestions(false); // 순서 유지하며 필터만 적용
+    renderUI();
 }
 
 function toggleStar() {
@@ -495,22 +505,12 @@ function toggleStar() {
     } else {
         starredIds.add(item.id);
     }
-    updateQuiz();
+    saveData();
+    renderUI();
 }
 
-function toggleRandom() {
-    currentIndex = 0;
-    updateQuiz();
-}
-
-function toggleStarOnly() {
-    currentIndex = 0;
-    updateQuiz();
-}
-
-function toggleAutoShow() {
-    const autoShow = document.getElementById('chkAutoShow').checked;
-    if (autoShow) {
+function handleAutoShowToggle() {
+    if (document.getElementById('chkAutoShow').checked) {
         showAnswer();
     } else {
         hideAnswer();
@@ -521,13 +521,12 @@ function resetAll() {
     if (confirm("외운 문제 목록과 별표 체크를 모두 초기화하시겠습니까?")) {
         excludedIds.clear();
         starredIds.clear();
-        document.getElementById('chkStarOnly').checked = false;
-        currentIndex = 0;
+        saveData();
         location.reload();
     }
 }
 
-// 스와이프 기능
+// 스와이프 지원
 let touchStartX = 0;
 let touchEndX = 0;
 const cardElement = document.getElementById('card');
@@ -551,7 +550,7 @@ function handleSwipe() {
     }
 }
 
-// 키보드 조작
+// 키보드 지원
 document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight') nextQuestion();
     if (e.key === 'ArrowLeft') prevQuestion();
@@ -561,7 +560,9 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-updateQuiz();
+// 초기화 실행
+prepareQuestions(true);
+renderUI();
 </script>
 
 </body>
